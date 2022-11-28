@@ -1,6 +1,7 @@
 import { remove as removeDiacritics } from 'diacritics';
 import { getType } from 'mime';
 import ow from 'ow';
+import slugify from 'slugify';
 import chapterXHTML2 from 'templates/epub2/chapter.xhtml.ejs';
 import contentOPF2 from 'templates/epub2/content.opf.ejs';
 import tocXHTML2 from 'templates/epub2/toc.xhtml.ejs';
@@ -9,7 +10,6 @@ import contentOPF3 from 'templates/epub3/content.opf.ejs';
 import tocXHTML3 from 'templates/epub3/toc.xhtml.ejs';
 import css from 'templates/template.css';
 import tocNCX from 'templates/toc.ncx.ejs';
-import uslug from 'uslug';
 import type { EPub } from '..';
 import { normalizeHTML } from './html';
 import { Chapter, chapterPredicate, Content, Font, NormChapter, NormOptions, Options, optionsPredicate } from './validate';
@@ -44,7 +44,7 @@ export const optionsDefaults = (version = 3): Omit<Options, 'title'> => ({
 });
 
 export const chapterDefaults = (index: number) => ({
-  title: `Chapter ${index+1}`,
+  title: `Chapter ${index + 1}`,
   id: `item_${index}`,
   url: '',
   excludeFromToc: false,
@@ -89,7 +89,7 @@ export const validateAndNormalizeChapter = (chapter: Chapter, index: number) => 
     ...chapter,
   } as NormChapter;
 
-  const slug = uslug(removeDiacritics(ch.title))
+  const slug = slugify(ch.title);
   if (!ch.filename) {
     ch.filename = `${index}_${slug}.xhtml`;
   } else if (!ch.filename.endsWith('.xhtml')) {
