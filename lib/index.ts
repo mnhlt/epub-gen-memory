@@ -5,14 +5,14 @@ import ow from 'ow';
 import { Chapter, chapterDefaults, Content, Font, Image, NormChapter, NormOptions, Options, optionsDefaults, optionsPredicate, retryFetch, type, uuid, validateAndNormalizeChapters, validateAndNormalizeOptions } from './util';
 
 
-export { Options, Content, Chapter, Font, optionsDefaults, chapterDefaults };
+export { Chapter, chapterDefaults, Content, Font, Options, optionsDefaults };
 
 export class EPub {
   protected options: NormOptions;
   protected content: NormChapter[];
   protected uuid: string;
   protected images: Image[] = [];
-  protected cover?: { extension: string, mediaType: string };
+  protected cover?: { extension: string, mediaType: string; };
 
   protected log: typeof console.log;
   protected warn: typeof console.warn;
@@ -26,7 +26,7 @@ export class EPub {
         this.warn = console.warn.bind(console);
         break;
       case false:
-        this.log = this.warn = () => {};
+        this.log = this.warn = () => { };
         break;
       default:
         this.log = this.options.verbose.bind(null, 'log');
@@ -39,10 +39,12 @@ export class EPub {
     this.zip.file('mimetype', 'application/epub+zip', { compression: 'STORE' });
 
     if (this.options.cover) {
-      const mediaType = getType(this.options.cover);
+      const fname = ow.isValid(this.options.cover, ow.string) ? this.options.cover : this.options.cover.name;
+      const mediaType = getType(fname);
       const extension = getExtension(mediaType || '');
       if (mediaType && extension)
         this.cover = { mediaType, extension };
+      else this.warn('Could not detect cover image type from file', fname);
     }
   }
 
@@ -80,7 +82,7 @@ export class EPub {
   protected async generateTemplateFiles() {
     const oebps = this.zip.folder('OEBPS')!;
     oebps.file('style.css', this.options.css);
-    
+
     this.content.forEach(chapter => {
       const rendered = renderTemplate(this.options.chapterXHTML, {
         lang: this.options.lang,
@@ -152,9 +154,24 @@ export class EPub {
   protected async makeCover() {
     if (!this.cover) return this.log('No cover to download');
     const oebps = this.zip.folder('OEBPS')!;
-    const coverContent = await retryFetch(this.options.cover, this.options.fetchTimeout, this.options.retryTimes, this.log)
-      .catch(reason => (this.warn(`Warning (cover ${this.options.cover}): Download failed`, reason), ''));
-    oebps.file(`cover.${this.cover.extension}`, coverContent);
+
+    if (ow.isValid(this.options.cover, ow.string)) {
+      const coverContent = await retryFetch(this.options.cover, this.options.fetchTimeout, this.options.retryTimes, this.log)
+        .catch(reason => (this.warn(`Warning (cover ${this.options.cover}): Download failed`, reason), ''));
+      oebps.file(`cover.${this.cover.extension}`, coverContent);
+    } else if (typeof this.options.cover.arrayBuffer !== 'undefined') { // node path
+      oebps.file(`cover.${this.cover.extension}`, this.options.cover.arrayBuffer());
+    } else { // browser path
+      const reader = new FileReader();
+      const promise = new Promise((resolve, reject) => {
+        reader.onload = resolve;
+        reader.onerror = reject;
+      });
+      reader.readAsArrayBuffer(this.options.cover);
+      await promise;
+      const coverContent = reader.result as ArrayBuffer;
+      oebps.file(`cover.${this.cover.extension}`, coverContent);
+    }
   }
 }
 
