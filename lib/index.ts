@@ -1,8 +1,7 @@
 import { render as renderTemplate } from 'ejs';
 import jszip, { generateAsync, JSZipGeneratorOptions } from 'jszip';
 import { getExtension, getType } from 'mime';
-import ow from 'ow';
-import { Chapter, chapterDefaults, Content, Font, Image, NormChapter, NormOptions, Options, optionsDefaults, optionsPredicate, retryFetch, type, uuid, validateAndNormalizeChapters, validateAndNormalizeOptions } from './util';
+import { Chapter, chapterDefaults, Content, Font, Image, isString, NormChapter, NormOptions, Options, optionsDefaults, retryFetch, type, uuid, validateAndNormalizeChapters, validateAndNormalizeOptions, validateIsOptionsOrTitle, validateIsVarargArray } from './util';
 
 
 export { Chapter, chapterDefaults, Content, Font, Options, optionsDefaults };
@@ -39,7 +38,7 @@ export class EPub {
     this.zip.file('mimetype', 'application/epub+zip', { compression: 'STORE' });
 
     if (this.options.cover) {
-      const fname = ow.isValid(this.options.cover, ow.string) ? this.options.cover : this.options.cover.name;
+      const fname = isString(this.options.cover) ? this.options.cover : this.options.cover.name;
       const mediaType = getType(fname);
       const extension = getExtension(mediaType || '');
       if (mediaType && extension)
@@ -155,7 +154,7 @@ export class EPub {
     if (!this.cover) return this.log('No cover to download');
     const oebps = this.zip.folder('OEBPS')!;
 
-    if (ow.isValid(this.options.cover, ow.string)) {
+    if (isString(this.options.cover)) {
       const coverContent = await retryFetch(this.options.cover, this.options.fetchTimeout, this.options.retryTimes, this.log)
         .catch(reason => (this.warn(`Warning (cover ${this.options.cover}): Download failed`, reason), ''));
       oebps.file(`cover.${this.cover.extension}`, coverContent);
@@ -176,11 +175,11 @@ export class EPub {
 }
 
 const epub = (optionsOrTitle: Options | string, content: Content, ...args: (boolean | number)[]) => {
-  ow(optionsOrTitle, ow.any(optionsPredicate, ow.string));
-  const options = ow.isValid(optionsOrTitle, ow.string) ? { title: optionsOrTitle } : optionsOrTitle;
-  ow(args, ow.array.ofType(ow.any(ow.boolean, ow.number)));
+  validateIsOptionsOrTitle(optionsOrTitle);
+  const options = isString(optionsOrTitle) ? { title: optionsOrTitle } : optionsOrTitle;
+  validateIsVarargArray(args);
   args.forEach(arg => {
-    if (ow.isValid(arg, ow.boolean)) options.verbose = arg;
+    if (typeof arg === 'boolean') options.verbose = arg;
     else options.version = arg;
   });
 

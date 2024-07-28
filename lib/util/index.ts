@@ -1,6 +1,5 @@
 import { remove as removeDiacritics } from 'diacritics';
 import { getType } from 'mime';
-import ow from 'ow';
 import slugify from 'slugify';
 import chapterXHTML2 from 'templates/epub2/chapter.xhtml.ejs';
 import contentOPF2 from 'templates/epub2/content.opf.ejs';
@@ -12,11 +11,12 @@ import css from 'templates/template.css';
 import tocNCX from 'templates/toc.ncx.ejs';
 import type { EPub } from '..';
 import { normalizeHTML } from './html';
-import { Chapter, chapterPredicate, Content, Font, NormChapter, NormOptions, Options, optionsPredicate } from './validate';
+import { isString, validateIsChapters, validateIsOptions, validateIsOptionsOrTitle, validateIsVarargArray } from './predicates';
+import { Chapter, Content, Font, NormChapter, NormOptions, Options } from './validate';
 
 export * from './html';
 export * from './other';
-export { Options, NormOptions, Content, Chapter, NormChapter, Font, optionsPredicate, chapterPredicate };
+export { Chapter, Content, Font, isString, NormChapter, NormOptions, Options, validateIsChapters, validateIsOptions, validateIsOptionsOrTitle, validateIsVarargArray };
 
 
 export const optionsDefaults = (version = 3): Omit<Options, 'title'> => ({
@@ -52,10 +52,10 @@ export const chapterDefaults = (index: number) => ({
 });
 
 
-export const normName = (name: string | string[] | undefined): string[] => ow.isValid(name, ow.string) ? [name] : (name || []);
+export const normName = (name: string | string[] | undefined): string[] => isString(name) ? [name] : (name || []);
 
 export const validateAndNormalizeOptions = (options: Options) => {
-  ow(options, 'options', optionsPredicate);
+  validateIsOptions(options);
 
   // put defaults
   const opt = {
@@ -70,7 +70,7 @@ export const validateAndNormalizeOptions = (options: Options) => {
 };
 
 export function validateAndNormalizeChapters(this: EPub, chapters: readonly Chapter[]) {
-  ow(chapters, 'content', ow.array.ofType(chapterPredicate));
+  validateIsChapters(chapters);
 
   let afterTOC = false;
   return chapters.map((chapter, index) => {
