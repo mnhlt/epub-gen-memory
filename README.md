@@ -107,8 +107,8 @@ protected:
     Publisher name
 - `description`: `string` (optional)  
     Book description
-- `cover`: `string` (optional)  
-    Book cover image URL, e.g. `"http://abc.com/book-cover.jpg"`
+- `cover`: `string | File` (optional)  
+    Book cover image URL, e.g. `"http://abc.com/book-cover.jpg"` or `File` object containing image bytes
 - `tocTitle`: `string` (optional, default `Table of Contents`)  
     Title of the Table of Contents
 - `tocInTOC`: `boolean` (optional, default `true`)  
