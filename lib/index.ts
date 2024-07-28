@@ -1,5 +1,5 @@
 import { render as renderTemplate } from 'ejs';
-import jszip, { JSZipGeneratorOptions } from 'jszip';
+import jszip, { generateAsync, JSZipGeneratorOptions } from 'jszip';
 import { getExtension, getType } from 'mime';
 import ow from 'ow';
 import { Chapter, chapterDefaults, Content, Font, Image, NormChapter, NormOptions, Options, optionsDefaults, optionsPredicate, retryFetch, type, uuid, validateAndNormalizeChapters, validateAndNormalizeOptions } from './util';
@@ -75,7 +75,7 @@ export class EPub {
     return content;
   }
 
-  generateAsync(options: JSZipGeneratorOptions) {
+  generateAsync<T extends NonNullable<JSZipGeneratorOptions['type']> = NonNullable<JSZipGeneratorOptions['type']>>(options: JSZipGeneratorOptions<T>): ReturnType<typeof generateAsync<T>> {
     return this.zip.generateAsync(options);
   }
 
