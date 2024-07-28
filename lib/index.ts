@@ -63,7 +63,7 @@ export class EPub {
 
   async genEpub() {
     await this.render();
-    const content = this.zip.generateAsync({
+    const content = this.generateAsync({
       type,
       mimeType: 'application/epub+zip',
       compression: 'DEFLATE',
