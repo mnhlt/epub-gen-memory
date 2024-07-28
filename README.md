@@ -180,6 +180,17 @@ You can then use the fonts as such (assuming you have a font with filename `Merr
 }
 ```
 
+## Changelog
+
+_Only includes major changes_
+
+### 1.1.0
+
+- **Optionally disable input validation**  
+  In the browser, by default, validation is not bundled due to size. To force use/not use, see the files `lib/util/predicates{-nop}.ts`.
+- **Support `File` for cover**  
+  Useful in the browser to allow user-uploaded files without temporary storage
+
 
 ## Demo Preview:
 
