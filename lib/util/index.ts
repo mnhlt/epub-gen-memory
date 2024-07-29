@@ -63,7 +63,7 @@ export const validateAndNormalizeOptions = (options: Options) => {
     ...options,
   } as NormOptions;
   opt.author = normName(opt.author);
-  opt.fonts = opt.fonts.map(font => ({ ...font, mediaType: getType(font.filename)! }));
+  opt.fonts = opt.fonts.map(font => ({ ...font, filename: font.filename.replace(/\s/g, '_').replace(/[^-._A-Za-z0-9]/g, ''), mediaType: getType(font.filename)! }));
   opt.date = new Date(opt.date).toISOString();
   opt.lang = removeDiacritics(opt.lang);
   return opt;
@@ -95,6 +95,7 @@ export const validateAndNormalizeChapter = (chapter: Chapter, index: number) => 
   } else if (!ch.filename.endsWith('.xhtml')) {
     ch.filename = `${ch.filename}.xhtml`;
   }
+  ch.filename = ch.filename.replace(/\s/g, '_').replace(/[^-._A-Za-z0-9]/g, '');
   ch.author = normName(ch.author);
   return ch;
 };
