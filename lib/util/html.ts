@@ -1,4 +1,4 @@
-import { getExtension, getType } from 'mime';
+import { getExtension, getType } from 'mime/lite';
 import type { EPub } from '..';
 import { fixHTML } from './html-parse';
 import { uuid } from './other';

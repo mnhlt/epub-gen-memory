@@ -1,6 +1,6 @@
 import { render as renderTemplate } from 'ejs';
 import jszip, { generateAsync, JSZipGeneratorOptions } from 'jszip';
-import { getExtension, getType } from 'mime';
+import { getExtension, getType } from 'mime/lite';
 import { Chapter, chapterDefaults, Content, Font, Image, isString, NormChapter, NormOptions, Options, optionsDefaults, retryFetch, type, uuid, validateAndNormalizeChapters, validateAndNormalizeOptions, validateIsOptionsOrTitle, validateIsVarargArray } from './util';
 
 

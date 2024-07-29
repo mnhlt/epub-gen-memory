@@ -1,5 +1,5 @@
 import { remove as removeDiacritics } from 'diacritics';
-import { getType } from 'mime';
+import { getType } from 'mime/lite';
 import slugify from 'slugify';
 import chapterXHTML2 from 'templates/epub2/chapter.xhtml.ejs';
 import contentOPF2 from 'templates/epub2/content.opf.ejs';
