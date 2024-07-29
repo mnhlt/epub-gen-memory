@@ -89,7 +89,7 @@ export const validateAndNormalizeChapter = (chapter: Chapter, index: number) => 
     ...chapter,
   } as NormChapter;
 
-  const slug = slugify(ch.title);
+  const slug = slugify(ch.title, { lower: true, strict: true });
   if (!ch.filename) {
     ch.filename = `${index}_${slug}.xhtml`;
   } else if (!ch.filename.endsWith('.xhtml')) {
