@@ -1,6 +1,6 @@
 import { render as renderTemplate } from 'ejs';
 import jszip, { generateAsync, JSZipGeneratorOptions } from 'jszip';
-import { getExtension, getType } from 'mime/lite';
+import mime from 'mime/lite';
 import { Chapter, chapterDefaults, Content, Font, Image, isString, NormChapter, NormOptions, Options, optionsDefaults, retryFetch, type, uuid, validateAndNormalizeChapters, validateAndNormalizeOptions, validateIsOptionsOrTitle, validateIsVarargArray } from './util';
 
 
@@ -39,8 +39,8 @@ export class EPub {
 
     if (this.options.cover) {
       const fname = isString(this.options.cover) ? this.options.cover : this.options.cover.name;
-      const mediaType = getType(fname);
-      const extension = getExtension(mediaType || '');
+      const mediaType = mime.getType(fname);
+      const extension = mime.getExtension(mediaType || '');
       if (mediaType && extension)
         this.cover = { mediaType, extension };
       else this.warn('Could not detect cover image type from file', fname);
