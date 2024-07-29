@@ -184,6 +184,11 @@ You can then use the fonts as such (assuming you have a font with filename `Merr
 
 _Only includes major changes_
 
+### 1.1.2
+
+- **Fixed file names**  
+  Internal chapter files are no longer given invalid names if the chapter title includes non-alphanumeric characters
+
 ### 1.1.0
 
 - **Optionally disable input validation**  
