@@ -157,7 +157,9 @@ export class EPub {
     if (isString(this.options.cover)) {
       const coverContent = await retryFetch(this.options.cover, this.options.fetchTimeout, this.options.retryTimes, this.log)
         .catch(reason => (this.warn(`Warning (cover ${this.options.cover}): Download failed`, reason), ''));
-      oebps.file(`cover.${this.cover.extension}`, coverContent);
+      if (coverContent) {
+        oebps.file(`cover.${this.cover.extension}`, coverContent);
+      }
     } else if (typeof this.options.cover.arrayBuffer !== 'undefined') { // node path
       oebps.file(`cover.${this.cover.extension}`, this.options.cover.arrayBuffer());
     } else { // browser path
