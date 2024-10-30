@@ -17,8 +17,12 @@ export class EpubStream extends AEpub {
   protected async createDirectoryStructure() {
     await fsPromises.mkdir(this.tempDir, { recursive: true });
     await fsPromises.mkdir(path.join(this.tempDir, 'OEBPS'), { recursive: true });
-    await fsPromises.mkdir(path.join(this.tempDir, 'OEBPS/images'), { recursive: true });
-    await fsPromises.mkdir(path.join(this.tempDir, 'OEBPS/fonts'), { recursive: true });
+    if (this.images.length) {
+      await fsPromises.mkdir(path.join(this.tempDir, 'OEBPS/images'), { recursive: true });
+    }
+    if (this.options.fonts.length) {
+      await fsPromises.mkdir(path.join(this.tempDir, 'OEBPS/fonts'), { recursive: true });
+    }
     await fsPromises.mkdir(path.join(this.tempDir, 'META-INF'), { recursive: true });
     await fsPromises.writeFile(path.join(this.tempDir, 'mimetype'), 'application/epub+zip');
   }
@@ -144,11 +148,6 @@ export class EpubStream extends AEpub {
         zlib: { level: 9 }
       });
 
-      // Add event listeners for debugging
-      output.on('close', () => {
-        this.log('Archive has been finalized and output file descriptor has closed');
-      });
-
       archive.on('error', (err) => {
         this.warn('Archive error:', err);
         reject(err);
@@ -160,6 +159,10 @@ export class EpubStream extends AEpub {
         } else {
           reject(err);
         }
+      });
+
+      archive.on('progress', (progress) => {
+        this.log(`Archive progress: ${progress.entries.processed}/${progress.entries.total} entries`);
       });
 
       archive.pipe(output);
