@@ -1,5 +1,5 @@
 {
-  "name": "@mnhlt/epub-gen-memory",
+  "name": "mnhlt-epub-gen-memory",
   "version": "1.1.5",
   "description": "A library to generate EPUB from HTML",
   "main": "dist/lib/index.js",
@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cpiber/epub-gen-memory.git"
+    "url": "https://github.com/mnhlt/epub-gen-memory.git"
   },
   "keywords": [
     "epub",
@@ -39,9 +39,9 @@
   "author": "cpiber",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cpiber/epub-gen-memory/issues"
+    "url": "https://github.com/mnhlt/epub-gen-memory/issues"
   },
-  "homepage": "https://github.com/cpiber/epub-gen-memory",
+  "homepage": "https://github.com/mnhlt/epub-gen-memory",
   "dependencies": {
     "abort-controller": "^3.0.0",
     "archiver": "^7.0.1",
